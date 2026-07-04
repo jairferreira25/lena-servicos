@@ -61,6 +61,14 @@
       "data": "2026-07-05",
       "valor": 100,
       "id": "1783168862722_x5p6"
+    },
+    {
+      "funcionario_id": "1783129936816_cbj5",
+      "funcionario_nome": "jair",
+      "turno": "manha",
+      "data": "2026-06-30",
+      "valor": 120,
+      "id": "1783168931322_rptp"
     }
   ],
   "config": {
