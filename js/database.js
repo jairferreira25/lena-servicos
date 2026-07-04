@@ -4,15 +4,14 @@ var db = {
 };
 
 function initDB(callback) {
-  if (GITHUB_TOKEN && GITHUB_TOKEN !== 'SEU_TOKEN') {
-    db.usandoGitHub = true;
-    gitInitDB();
-    if (callback) setTimeout(callback, 300);
-  } else {
-    db.usandoGitHub = false;
-    carregarLocal();
+  db.usandoGitHub = true;
+  gitInitDB(function(sucesso) {
+    if (!sucesso) {
+      db.usandoGitHub = false;
+      carregarLocal();
+    }
     if (callback) callback();
-  }
+  });
 }
 
 function carregarLocal() {

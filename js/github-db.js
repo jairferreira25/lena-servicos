@@ -16,23 +16,61 @@ function gitToken() {
   return t;
 }
 
-function gitInitDB() {
+function gitInitDB(callback) {
   var tok = gitToken();
   if (!tok) {
-    var t = prompt('Cole o token do GitHub para ativar o sync:\n(ghp_...)');
-    if (t && t.length > 10) {
-      localStorage.setItem('github_token', t);
-    } else {
-      db.usandoGitHub = false;
-      carregarLocal();
-      return;
-    }
+    mostrarInputToken(function(t) {
+      if (t && t.length > 10) {
+        localStorage.setItem('github_token', t);
+        gitCarregar(function() {
+          gitNotificar();
+          if (GITHUB_DB.pollTimer) clearInterval(GITHUB_DB.pollTimer);
+          GITHUB_DB.pollTimer = setInterval(gitPoll, 5000);
+          if (callback) callback(true);
+        });
+      } else {
+        if (callback) callback(false);
+      }
+    });
+    return;
   }
   gitCarregar(function() {
     gitNotificar();
     if (GITHUB_DB.pollTimer) clearInterval(GITHUB_DB.pollTimer);
     GITHUB_DB.pollTimer = setInterval(gitPoll, 5000);
+    if (callback) callback(true);
   });
+}
+
+function mostrarInputToken(callback) {
+  var overlay = document.getElementById('modalOverlay');
+  var content = document.getElementById('modalContent');
+  content.innerHTML =
+    '<h3 style="color:#D4AF37">🔑 Ativar Sincronia</h3>' +
+    '<p style="color:#A0A0A0;font-size:12px;margin:6px 0">Cole o token do GitHub para sincronizar dados entre dispositivos:</p>' +
+    '<input type="text" id="inputToken" value="ghp_" style="width:100%;padding:10px;background:#2A2A2C;border:1px solid #D4AF37;border-radius:6px;color:#FFF;font-size:14px;margin:6px 0" autofocus>' +
+    '<div style="display:flex;gap:8px;margin-top:8px">' +
+    '<button class="btn btn-sm" onclick="fecharInputToken(null)" style="flex:1">Sem sync</button>' +
+    '<button class="btn btn-sm btn-primary" onclick="confirmarToken()" style="flex:1">Ativar</button></div>';
+  overlay.classList.add('active');
+  setTimeout(function() {
+    var inp = document.getElementById('inputToken');
+    if (inp) inp.focus();
+  }, 300);
+  window._tokenCallback = callback;
+}
+
+function fecharInputToken(valor) {
+  document.getElementById('modalOverlay').classList.remove('active');
+  if (window._tokenCallback) {
+    window._tokenCallback(valor);
+    window._tokenCallback = null;
+  }
+}
+
+function confirmarToken() {
+  var val = document.getElementById('inputToken').value.trim();
+  fecharInputToken(val);
 }
 
 function gitCarregar(callback) {
