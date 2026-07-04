@@ -12,8 +12,13 @@ var GITHUB_DB = {
 
 function gitToken() {
   var t = localStorage.getItem('github_token');
-  if (!t) t = '';
-  return t;
+  if (!t && APP_CONFIG.tokenEnc) {
+    try {
+      t = atob(APP_CONFIG.tokenEnc);
+      if (t.length > 10) localStorage.setItem('github_token', t);
+    } catch (e) { t = ''; }
+  }
+  return t || '';
 }
 
 function gitInitDB(callback) {
