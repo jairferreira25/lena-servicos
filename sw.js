@@ -1,18 +1,17 @@
-var CACHE = 'lena-v3';
-var URLS = ['index.html', 'manifest.json', 'css/styles.css', 'assets/logo.png',
-  'js/config.js', 'js/github-db.js', 'js/database.js', 'js/ui.js', 'js/screens.js', 'js/pdf.js', 'js/dashboard.js', 'js/app.js'];
-
 self.addEventListener('install', function(e) {
-  e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(URLS); }));
-  self.skipWaiting();
+  e.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', function(e) {
-  e.waitUntil(clients.claim());
+  e.waitUntil(
+    caches.keys().then(function(nomes) {
+      return Promise.all(nomes.map(function(n) { return caches.delete(n); }));
+    }).then(function() {
+      return self.clients.claim();
+    })
+  );
 });
 
 self.addEventListener('fetch', function(e) {
-  e.respondWith(
-    caches.match(e.request).then(function(r) { return r || fetch(e.request).catch(function() { return null; }); })
-  );
+  e.respondWith(fetch(e.request).catch(function() { return null; }));
 });
