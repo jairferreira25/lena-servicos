@@ -29,7 +29,7 @@ function telaMenu() {
   return '<h1>LENA SERVICOS</h1>' +
     '<p class="sub">Selecione uma opcao</p>' +
     '<div style="display:flex;gap:8px;justify-content:center;margin:4px 0;flex-wrap:wrap">' +
-    (db.usandoFirestore ? '<button class="btn btn-sm" onclick="irPara(\'dashboard\')">📊 Dashboard</button>' : '') +
+    '<button class="btn btn-sm" onclick="irPara(\'dashboard\')">📊 Dashboard</button>' +
     '<button class="btn btn-sm" onclick="irPara(\'config\')">⚙️ Precos</button>' +
     '</div>' +
     '<div class="grid-menu">' +

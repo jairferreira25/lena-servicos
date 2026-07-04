@@ -1,0 +1,8 @@
+{
+  "funcionarios": [],
+  "turnos": [],
+  "config": {
+    "valor_manha": 120,
+    "valor_noite": 100
+  }
+}

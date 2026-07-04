@@ -1,6 +1,6 @@
 var CACHE = 'lena-v2';
 var URLS = ['index.html', 'manifest.json', 'css/styles.css',
-  'js/config.js', 'js/auth.js', 'js/database.js', 'js/ui.js', 'js/screens.js', 'js/pdf.js', 'js/dashboard.js', 'js/app.js'];
+  'js/config.js', 'js/auth.js', 'js/github-db.js', 'js/database.js', 'js/ui.js', 'js/screens.js', 'js/pdf.js', 'js/dashboard.js', 'js/app.js'];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(URLS); }));
