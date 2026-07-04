@@ -5,7 +5,16 @@
       "nome": "jair"
     }
   ],
-  "turnos": [],
+  "turnos": [
+    {
+      "funcionario_id": "1783129936816_cbj5",
+      "funcionario_nome": "jair",
+      "turno": "manha",
+      "data": "2026-07-04",
+      "valor": 120,
+      "id": "1783129945267_8pvs"
+    }
+  ],
   "config": {
     "valor_manha": 120,
     "valor_noite": 100
