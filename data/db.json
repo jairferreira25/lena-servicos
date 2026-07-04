@@ -1,5 +1,10 @@
 {
-  "funcionarios": [],
+  "funcionarios": [
+    {
+      "id": "1783129936816_cbj5",
+      "nome": "jair"
+    }
+  ],
   "turnos": [],
   "config": {
     "valor_manha": 120,
