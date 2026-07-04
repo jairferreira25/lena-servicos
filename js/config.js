@@ -1,11 +1,11 @@
 // Configuracao Firebase - Substitua pelos dados do seu projeto
 var FIREBASE_CONFIG = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyAObHmWo7kXTYg2-v8FGMh_TJTe9p6a19A",
+  authDomain: "lena-servicos.firebaseapp.com",
+  projectId: "lena-servicos",
+  storageBucket: "lena-servicos.firebasestorage.app",
+  messagingSenderId: "870907661935",
+  appId: "1:870907661935:web:d2a0b380600ee45386079a"
 };
 
 var APP_CONFIG = {
