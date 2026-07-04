@@ -25,6 +25,14 @@
       "data": "2026-07-04",
       "valor": 100,
       "id": "1783172252746_r0sv"
+    },
+    {
+      "funcionario_id": "1783201233740_hs3s",
+      "funcionario_nome": "Lunna",
+      "turno": "manha",
+      "data": "2026-07-04",
+      "valor": 120,
+      "id": "1783201253281_09mv"
     }
   ],
   "config": {
