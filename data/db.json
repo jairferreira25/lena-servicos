@@ -13,6 +13,14 @@
       "data": "2026-07-04",
       "valor": 120,
       "id": "1783172248234_3982"
+    },
+    {
+      "funcionario_id": "1783129936816_cbj5",
+      "funcionario_nome": "jair",
+      "turno": "noite",
+      "data": "2026-07-04",
+      "valor": 100,
+      "id": "1783172252746_r0sv"
     }
   ],
   "config": {
