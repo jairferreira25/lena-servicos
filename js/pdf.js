@@ -12,10 +12,7 @@ function carregarLogo(callback) {
     _logoBase64 = c.toDataURL('image/png');
     if (callback) callback(_logoBase64);
   };
-  img.onerror = function() {
-    _logoBase64 = null;
-    if (callback) callback(null);
-  };
+  img.onerror = function() { _logoBase64 = null; if (callback) callback(null); };
   img.src = 'assets/logo.png';
 }
 
@@ -31,198 +28,229 @@ function gerarPDF(dados) {
 
     var pdf = new jsPDF('p', 'mm', 'a4');
     var W = 210, H = 297;
-    var G = [212, 175, 55];
-    var cor = function(r, g, b) { pdf.setFillColor(r, g, b); pdf.setDrawColor(r, g, b); };
-    var gold = function() { pdf.setTextColor(G[0], G[1], G[2]); };
-    var white = function() { pdf.setTextColor(255, 255, 255); };
-    var gray = function() { pdf.setTextColor(160, 160, 160); };
-    var goldPen = function() { pdf.setDrawColor(G[0], G[1], G[2]); };
+    var GOLD = '#D4AF37';
+    var BG = '#0B0B0B';
+    var CARD = '#1A1A1C';
 
-    cor(10, 10, 10);
-    pdf.rect(0, 0, W, H, 'F');
+    var setGold = function() { pdf.setTextColor(212, 175, 55); };
+    var setWhite = function() { pdf.setTextColor(255, 255, 255); };
+    var setGray = function() { pdf.setTextColor(160, 160, 160); };
+    var fillBg = function() { pdf.setFillColor(11, 11, 11); pdf.rect(0, 0, W, H, 'F'); };
+    var fillCard = function() { pdf.setFillColor(26, 26, 28); };
+    var drawGoldLine = function(y) { pdf.setDrawColor(212, 175, 55); pdf.setLineWidth(0.3); pdf.line(25, y, W - 25, y); };
 
-    goldPen();
-    pdf.setLineWidth(1.5);
-    cor(20, 18, 12);
-    pdf.triangle(0, 0, 45, 0, 0, 45, 'F');
-    pdf.line(0, 45, 45, 0);
-    pdf.triangle(W, 0, W - 45, 0, W, 45, 'F');
-    pdf.line(W - 45, 0, W, 45);
-    pdf.triangle(0, H, 45, H, 0, H - 45, 'F');
-    pdf.line(0, H - 45, 45, H);
-    pdf.triangle(W, H, W - 45, H, W, H - 45, 'F');
-    pdf.line(W - 45, H, W, H - 45);
+    fillBg();
 
-    var y = 18;
+    var y = 0;
 
     carregarLogo(function(logo) {
+      // ===== LOGO =====
+      y = 14;
       if (logo) {
         try {
-          pdf.addImage(logo, 'PNG', W / 2 - 12, y - 4, 24, 12);
-          y += 16;
-        } catch (e) {
-          y = y;
-        }
+          var ls = 16;
+          pdf.setDrawColor(255, 255, 255);
+          pdf.setLineWidth(0.5);
+          pdf.rect(W / 2 - ls / 2 - 1, y - 1, ls + 2, ls + 2, 'S');
+          pdf.addImage(logo, 'PNG', W / 2 - ls / 2, y, ls, ls);
+          y += ls + 8;
+        } catch (e) {}
       }
 
-      gold();
+      // ===== NOME EMPRESA =====
+      setGold();
       pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(20);
-      pdf.text('LENA SERVICOS', W / 2, y + 4, { align: 'center' });
-      y += 12;
+      pdf.setFontSize(22);
+      pdf.text('LENA SERVICOS', W / 2, y, { align: 'center' });
+      y += 9;
 
-      goldPen();
-      pdf.setLineWidth(0.3);
-      pdf.line(30, y, W - 30, y);
+      // ===== SUBTITULO =====
+      setWhite();
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.text('R E L A T O R I O   D E   P A G A M E N T O', W / 2, y, { align: 'center', charSpace: 2 });
+      y += 5;
+
+      drawGoldLine(y);
       y += 4;
 
-      white();
-      pdf.setFontSize(9);
-      pdf.text('RELATORIO DE PAGAMENTO', W / 2, y, { align: 'center' });
-      y += 8;
-
       if (dados.periodo) {
-        gray();
-        pdf.setFontSize(8);
+        setGray();
+        pdf.setFontSize(7);
         pdf.text('Periodo: ' + dados.periodo, W / 2, y, { align: 'center' });
         y += 7;
       }
 
-      cor(28, 28, 30);
-      goldPen();
-      pdf.setLineWidth(0.5);
-      pdf.roundedRect(15, y, 180, 18, 3, 3, 'FD');
+      // ===== CARD COLABORADOR =====
+      fillCard();
+      pdf.setDrawColor(212, 175, 55);
+      pdf.setLineWidth(0.4);
+      pdf.roundedRect(18, y, 174, 18, 4, 4, 'FD');
 
-      gold();
-      pdf.setFontSize(7);
-      pdf.text('COLABORADOR', 22, y + 4);
-      white();
-      pdf.setFontSize(13);
+      pdf.setDrawColor(212, 175, 55);
+      pdf.setFillColor(212, 175, 55);
+      pdf.circle(30, y + 9, 5, 'FD');
+      setWhite();
+      pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(dados.nome.toUpperCase(), 22, y + 13);
-      pdf.setFont('helvetica', 'normal');
+      pdf.text('U', 30, y + 10, { align: 'center' });
+
+      setGold();
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(6);
+      pdf.text('NOME DO COLABORADOR', 40, y + 5);
+
+      setWhite();
+      pdf.setFontSize(12);
+      pdf.text(dados.nome.toUpperCase(), 40, y + 14);
+
       y += 26;
 
-      gold();
-      pdf.setFontSize(8);
+      // ===== SECAO DETALHAMENTO =====
+      setGold();
       pdf.setFont('helvetica', 'bold');
-      pdf.text('DATA', 22, y);
-      pdf.text('TURNO', 85, y);
-      pdf.text('VALOR', 150, y);
-      pdf.text('STATUS', 175, y);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setDrawColor(60, 60, 60);
-      pdf.line(15, y + 0.5, 195, y + 0.5);
-      y += 6;
+      pdf.setFontSize(9);
+      pdf.text('DETALHAMENTO DOS DIAS TRABALHADOS', 18, y);
+      y += 7;
+
+      // ===== CABECALHO TABELA =====
+      setGold();
+      pdf.setFontSize(7);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('DATA', 18, y);
+      pdf.text('TURNO', 80, y);
+      pdf.text('VALOR', 175, y, { align: 'right' });
+
+      pdf.setDrawColor(60, 60, 62);
+      pdf.setLineWidth(0.2);
+      pdf.line(18, y + 0.5, 192, y + 0.5);
+      y += 5;
 
       var count = 0;
-      var linhasPorPag = 14;
+      var linhasPorPag = 16;
+
       for (var i = 0; i < dados.turnos.length; i++) {
         var t = dados.turnos[i];
+
         if (count > 0 && count % linhasPorPag === 0) {
           pdf.addPage();
-          cor(10, 10, 10);
-          pdf.rect(0, 0, W, H, 'F');
-          goldPen();
-          cor(20, 18, 12);
-          pdf.triangle(0, 0, 45, 0, 0, 45, 'F');
-          pdf.line(0, 45, 45, 0);
-          pdf.triangle(W, 0, W - 45, 0, W, 45, 'F');
-          pdf.line(W - 45, 0, W, 45);
-          pdf.line(30, 10, W - 30, 10);
-          y = 20;
-          gold();
-          pdf.setFontSize(8);
-          pdf.text('DATA', 22, y);
-          pdf.text('TURNO', 85, y);
-          pdf.text('VALOR', 150, y);
-          pdf.text('STATUS', 175, y);
-          pdf.setDrawColor(60, 60, 60);
-          pdf.line(15, y + 0.5, 195, y + 0.5);
-          y += 6;
+          fillBg();
+          setGold();
+          pdf.setFontSize(7);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text('DATA', 18, 18);
+          pdf.text('TURNO', 80, 18);
+          pdf.text('VALOR', 175, 18, { align: 'right' });
+          pdf.setDrawColor(60, 60, 62);
+          pdf.line(18, 18.5, 192, 18.5);
+          y = 23;
         }
 
         var dt = formatarDataISO(t.data);
         var tNome = t.turno === 'manha' ? 'Manha' : 'Noite';
-        var tCls = t.turno === 'manha' ? [G[0], G[1], G[2]] : [90, 156, 255];
 
-        cor(count % 2 === 0 ? 28 : 24, count % 2 === 0 ? 28 : 24, count % 2 === 0 ? 30 : 26);
-        pdf.rect(15, y - 1.5, 180, 6.5, 'F');
+        // Alterna fundo entre escuro e mais claro
+        if (count % 2 === 0) {
+          pdf.setFillColor(26, 26, 28);
+        } else {
+          pdf.setFillColor(32, 30, 24);
+        }
+        pdf.rect(16, y - 1.5, 178, 6, 'F');
 
-        white();
-        pdf.setFontSize(8);
-        pdf.text(dt, 22, y + 1.5);
-
-        pdf.setTextColor(tCls[0], tCls[1], tCls[2]);
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text((t.turno === 'manha' ? '☀ ' : '☽ ') + tNome, 85, y + 1.5);
-        pdf.setFont('helvetica', 'normal');
-
-        white();
-        pdf.text('R$ ' + t.valor.toFixed(2), 150, y + 1.5);
-
-        pdf.setTextColor(76, 175, 80);
+        setWhite();
         pdf.setFontSize(7);
-        pdf.text('OK', 175, y + 2);
-        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(dt, 18, y + 1.5);
+
+        if (t.turno === 'manha') {
+          setGold();
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(7);
+          pdf.text('\u2600 ' + tNome, 78, y + 1.5);
+        } else {
+          pdf.setTextColor(90, 156, 255);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(7);
+          pdf.text('\u263D ' + tNome, 78, y + 1.5);
+        }
+
+        setWhite();
+        pdf.text('R$ ' + t.valor.toFixed(2), 175, y + 1.5, { align: 'right' });
 
         y += 6.5;
         count++;
       }
 
       y += 8;
-      if (y > 235) { pdf.addPage(); cor(10, 10, 10); pdf.rect(0, 0, W, H, 'F'); y = 15; }
+      if (y > 230) { pdf.addPage(); fillBg(); y = 18; }
 
-      var cw = 56, ch = 16, gap = 6, sx = 15;
+      // ===== CARDS DE RESUMO =====
+      var cw = 56, ch = 22, gap = 5, sx = 18;
+
       var cards = [
-        { label: 'DIAS (DIA)', valor: '' + dados.dias_manha, cor: G },
-        { label: 'DIAS (NOITE)', valor: '' + dados.dias_noite, cor: [90, 156, 255] },
-        { label: 'VALOR TOTAL', valor: 'R$ ' + dados.valor_total.toFixed(2), cor: G, destaque: true }
+        { label: 'Total de Dias (Dia)', valor: '' + dados.dias_manha, cor: [212, 175, 55] },
+        { label: 'Total de Dias (Noite)', valor: '' + dados.dias_noite, cor: [90, 156, 255] },
+        { label: 'Valor Total a Receber', valor: 'R$ ' + dados.valor_total.toFixed(2), cor: [212, 175, 55], destaque: true }
       ];
 
       for (var ci = 0; ci < cards.length; ci++) {
         var cx = sx + ci * (cw + gap);
-        cor(28, 28, 30);
+
+        fillCard();
         if (cards[ci].destaque) {
-          goldPen();
-          pdf.setLineWidth(0.8);
+          pdf.setDrawColor(212, 175, 55);
+          pdf.setLineWidth(0.5);
         } else {
           pdf.setDrawColor(50, 50, 52);
           pdf.setLineWidth(0.3);
         }
-        pdf.roundedRect(cx, y, cw, ch, 3, 3, 'FD');
+        pdf.roundedRect(cx, y, cw, ch, 4, 4, 'FD');
 
+        pdf.setDrawColor(212, 175, 55);
+        pdf.setFillColor(212, 175, 55);
+        pdf.circle(cx + 8, y + 6, 2.5, 'FD');
+
+        pdf.setTextColor(180, 180, 180);
+        pdf.setFontSize(5);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(cards[ci].label, cx + 14, y + 5);
+
+        setWhite();
+        pdf.setFontSize(cards[ci].destaque ? 10 : 14);
+        pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(cards[ci].cor[0], cards[ci].cor[1], cards[ci].cor[2]);
-        pdf.setFontSize(5.5);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(cards[ci].label, cx + 4, y + 4);
-
-        white();
-        pdf.setFontSize(cards[ci].destaque ? 9 : 11);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(cards[ci].valor, cx + 4, y + 12);
-        pdf.setFont('helvetica', 'normal');
+        pdf.text(cards[ci].valor, cx + 6, y + 16);
       }
 
-      y += 24;
+      y += 30;
 
-      cor(20, 20, 22);
-      pdf.setDrawColor(40, 40, 42);
+      // ===== RODAPE =====
+      if (y > 270) { pdf.addPage(); fillBg(); y = 15; }
+
+      fillCard();
+      pdf.setDrawColor(50, 50, 52);
       pdf.setLineWidth(0.3);
-      pdf.roundedRect(15, y, 180, 10, 3, 3, 'FD');
+      pdf.roundedRect(18, y, 174, 12, 4, 4, 'FD');
 
-      gold();
-      pdf.setFontSize(6);
-      pdf.text('LENA SERVICOS', 22, y + 6);
+      pdf.setDrawColor(212, 175, 55);
+      pdf.setFillColor(212, 175, 55);
+      pdf.circle(30, y + 6, 2.5, 'FD');
 
       pdf.setTextColor(150, 150, 150);
-      pdf.text('Agradecemos pelo seu compromisso e dedicacao.', W / 2, y + 6, { align: 'center' });
+      pdf.setFontSize(6.5);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Agradecemos pelo seu compromisso e dedicacao.', 38, y + 5);
 
-      pdf.setTextColor(100, 100, 100);
+      setGold();
       pdf.setFontSize(5.5);
-      pdf.text(APP_CONFIG.nome + ' v' + APP_CONFIG.versao + ' - Gerado em ' + new Date().toLocaleString('pt-BR'), 190, y + 6, { align: 'right' });
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('LENA SERVICOS', 185, y + 5, { align: 'right' });
 
+      pdf.setTextColor(80, 80, 80);
+      pdf.setFontSize(4.5);
+      pdf.text('v' + APP_CONFIG.versao + ' | ' + new Date().toLocaleString('pt-BR'), 185, y + 9, { align: 'right' });
+
+      // ===== DOWNLOAD =====
       var nomeArquivo = 'Relatorio_' + dados.nome.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') + '.pdf';
       var blob = pdf.output('blob');
       var url = URL.createObjectURL(blob);
@@ -234,6 +262,7 @@ function gerarPDF(dados) {
       document.body.appendChild(a);
       a.click();
       toast('Download: ' + nomeArquivo);
+
       setTimeout(function() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
