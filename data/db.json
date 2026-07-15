@@ -1,10 +1,6 @@
 {
   "funcionarios": [
     {
-      "id": "1784119369547_6fso",
-      "nome": "lena ferreira gomes"
-    },
-    {
       "id": "1784119392102_x8ld",
       "nome": "ana ferreira matias"
     },
@@ -14,14 +10,6 @@
     }
   ],
   "turnos": [
-    {
-      "funcionario_id": "1784119369547_6fso",
-      "funcionario_nome": "lena ferreira gomes",
-      "turno": "manha",
-      "data": "2026-07-15",
-      "valor": 120,
-      "id": "1784124652691_d0uu"
-    },
     {
       "funcionario_id": "1784119403335_z0vr",
       "funcionario_nome": "wilton de almeida matias",
