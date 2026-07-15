@@ -77,6 +77,14 @@
       "data": "2026-07-15",
       "valor": 120,
       "id": "1784124658894_znu6"
+    },
+    {
+      "funcionario_id": "1784119403335_z0vr",
+      "funcionario_nome": "wilton de almeida matias",
+      "turno": "manha",
+      "data": "2026-07-15",
+      "valor": 120,
+      "id": "1784124663911_kw4w"
     }
   ],
   "config": {
