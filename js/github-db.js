@@ -127,13 +127,16 @@ function gitSalvar(callback) {
       branch: GITHUB_DB.branch,
       sha: GITHUB_DB.ultimaSHA
     })
-  }).then(function(r) { return r.json(); }).then(function(data) {
+  }).then(function(r) {
+    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+    return r.json();
+  }).then(function(data) {
     if (data.content) GITHUB_DB.ultimaSHA = data.content.sha;
     GITHUB_DB.dados = JSON.parse(decodeURIComponent(escape(atob(conteudo))));
     gitNotificar();
     if (callback) callback(null);
   }).catch(function(err) {
-    if (callback) callback('Erro ao salvar');
+    if (callback) callback('Erro ao salvar: ' + (err.message || err));
   });
 }
 
@@ -142,8 +145,11 @@ function gitPoll() {
   if (!tok) return;
   fetch(GITHUB_DB.apiBase + '/' + GITHUB_DB.repo + '/contents/' + GITHUB_DB.path, {
     headers: { 'Authorization': 'token ' + tok, 'Accept': 'application/vnd.github.v3+json' }
-  }).then(function(r) { return r.json(); }).then(function(data) {
-    if (data.sha && data.sha !== GITHUB_DB.ultimaSHA) {
+  }).then(function(r) {
+    if (!r.ok) return null;
+    return r.json();
+  }).then(function(data) {
+    if (data && data.sha && data.sha !== GITHUB_DB.ultimaSHA) {
       GITHUB_DB.ultimaSHA = data.sha;
       var json = atob(data.content.replace(/\n/g, ''));
       GITHUB_DB.dados = JSON.parse(json);

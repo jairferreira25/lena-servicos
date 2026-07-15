@@ -34,13 +34,20 @@ function irPara(screen) {
 }
 
 function carregarDados() {
-  // Escuta funcionarios em tempo real
-  if (appState.funcsListener && typeof appState.funcsListener === 'function') appState.funcsListener();
-  appState.funcsListener = listarFuncionarios(function(lista) {
+  listarFuncionarios(function(lista) {
     appState.funcs = lista;
     if (appState.screen === 'menu' || appState.screen === 'registrar' || appState.screen === 'editar' || appState.screen === 'relatorio') {
       renderizar();
     }
+  });
+  // Registra para atualizar em tempo real via poll
+  gitOnChange(function() {
+    listarFuncionarios(function(lista) {
+      appState.funcs = lista;
+      if (appState.screen === 'menu' || appState.screen === 'registrar' || appState.screen === 'editar' || appState.screen === 'relatorio') {
+        renderizar();
+      }
+    });
   });
 }
 

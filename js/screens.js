@@ -17,10 +17,7 @@ function renderizar() {
 function posRenderizar() {
   if (appState.screen === 'relatorio' && appState.relDados) exibirResultado(appState.relDados);
   if (appState.screen === 'editar') {
-    var sel = document.getElementById('selectTurnoEdit');
-    if (sel && sel.value && sel.value !== '') {
-      var t = appState.relDados && appState.relDados.turnos ? appState.relDados.turnos.find(function(x){ return x.id == sel.value; }) : null;
-    }
+    carregarTurnosEdicao();
   }
   if (appState.screen === 'dashboard') initDashboard();
 }
