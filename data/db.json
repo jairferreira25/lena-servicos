@@ -1,10 +1,6 @@
 {
   "funcionarios": [
     {
-      "id": "1784116179450_2axm",
-      "nome": "jair ferreira de nojosa matias"
-    },
-    {
       "id": "1784116197194_gz2b",
       "nome": "lunna de vasconcelos ferreira"
     },
@@ -29,14 +25,6 @@
       "data": "2026-07-04",
       "valor": 100,
       "id": "1783172252746_r0sv"
-    },
-    {
-      "funcionario_id": "1784116179450_2axm",
-      "funcionario_nome": "jair ferreira de nojosa matias",
-      "turno": "manha",
-      "data": "2026-07-15",
-      "valor": 120,
-      "id": "1784116501981_2g61"
     }
   ],
   "config": {
