@@ -57,6 +57,14 @@
       "data": "2026-07-15",
       "valor": 120,
       "id": "1784119418831_8av1"
+    },
+    {
+      "funcionario_id": "1784116197194_gz2b",
+      "funcionario_nome": "lunna de vasconcelos ferreira",
+      "turno": "noite",
+      "data": "2026-07-15",
+      "valor": 100,
+      "id": "1784119429010_gmok"
     }
   ],
   "config": {
