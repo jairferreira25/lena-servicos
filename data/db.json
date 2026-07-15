@@ -53,6 +53,14 @@
       "data": "2026-07-15",
       "valor": 100,
       "id": "1784119443190_kc3i"
+    },
+    {
+      "funcionario_id": "1784116246210_uy8u",
+      "funcionario_nome": "benjamin de vasconcelos ferreira",
+      "turno": "manha",
+      "data": "2026-07-15",
+      "valor": 120,
+      "id": "1784124644675_xlwd"
     }
   ],
   "config": {
