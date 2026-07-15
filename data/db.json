@@ -1,10 +1,6 @@
 {
   "funcionarios": [
     {
-      "id": "1784116246210_uy8u",
-      "nome": "benjamin de vasconcelos ferreira"
-    },
-    {
       "id": "1784119369547_6fso",
       "nome": "lena ferreira gomes"
     },
@@ -18,14 +14,6 @@
     }
   ],
   "turnos": [
-    {
-      "funcionario_id": "1784116246210_uy8u",
-      "funcionario_nome": "benjamin de vasconcelos ferreira",
-      "turno": "manha",
-      "data": "2026-07-15",
-      "valor": 120,
-      "id": "1784124644675_xlwd"
-    },
     {
       "funcionario_id": "1784119369547_6fso",
       "funcionario_nome": "lena ferreira gomes",
