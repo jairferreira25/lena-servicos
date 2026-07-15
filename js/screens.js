@@ -33,12 +33,12 @@ function telaMenu() {
     '<div class="card" onclick="irPara(\'cadastrar\')"><span class="icon">👥</span><div class="label">Cadastrar</div><div class="sublabel">Funcionario</div></div>' +
     '<div class="card" onclick="irPara(\'registrar\')"><span class="icon">📝</span><div class="label">Registrar</div><div class="sublabel">Dia</div></div>' +
     '<div class="card" onclick="irPara(\'relatorio\')"><span class="icon">📊</span><div class="label">Gerar</div><div class="sublabel">Relatorio</div></div>' +
-    '<div class="card" onclick="irPara(\'editar\')"><span class="icon">✏️</span><div class="label">Alterar</div><div class="sublabel">Registro</div></div>' +
+    '<div class="card" onclick="irPara(\'editar\')"><span class="icon">🗑️</span><div class="label">Excluir</div><div class="sublabel">Registro</div></div>' +
     '</div>';
 }
 
 function telaCadastrar() {
-  return '<button class="btn-back" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
+  return '<button class="btn-home" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
     '<form onsubmit="event.preventDefault();acaoCadastrar()">' +
     '<h2>👥 Cadastrar Funcionario</h2>' +
     '<label class="label">Nome completo</label>' +
@@ -51,7 +51,7 @@ function telaRegistrar() {
   var opts = appState.funcs.length ? appState.funcs.map(function(f){ return '<option value="' + f.nome + '">' + f.nome + '</option>'; }).join('') : '<option value="">Nenhum cadastrado</option>';
   var vm = obterConfig('valor_manha', 120);
   var vn = obterConfig('valor_noite', 100);
-  return '<button class="btn-back" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
+  return '<button class="btn-home" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
     '<form onsubmit="event.preventDefault();acaoRegistrar()">' +
     '<h2>📝 Registrar Turno</h2>' +
     '<label class="label">Funcionario</label>' +
@@ -66,7 +66,7 @@ function telaRegistrar() {
 
 function telaRelatorio() {
   var opts = appState.funcs.length ? appState.funcs.map(function(f){ return '<option value="' + f.nome + '">' + f.nome + '</option>'; }).join('') : '<option value="">Nenhum</option>';
-  return '<button class="btn-back" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
+  return '<button class="btn-home" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
     '<form id="relForm" onsubmit="event.preventDefault();acaoBuscarRelatorio()">' +
     '<h2>📊 Relatorio de Pagamento</h2>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label class="label">Funcionario</label><select id="selectFuncRel">' + opts + '</select></div>' +
@@ -79,25 +79,24 @@ function telaRelatorio() {
 
 function telaEditar() {
   var opts = appState.funcs.length ? appState.funcs.map(function(f){ return '<option value="' + f.nome + '">' + f.nome + '</option>'; }).join('') : '<option value="">Nenhum</option>';
-  return '<button class="btn-back" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
-    '<form onsubmit="event.preventDefault();acaoSalvarEdicao()" style="gap:10px">' +
-    '<h2>✏️ Alterar Registro</h2>' +
+  return '<button class="btn-home" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
+    '<form style="gap:10px">' +
+    '<h2>🗑️ Excluir Registro</h2>' +
     '<label class="label">Selecione o Turno</label>' +
-    '<select id="selectTurnoEdit" onchange="carregarDataEdicao()"><option value="">Carregando...</option></select>' +
-    '<label class="label">Nova Data</label>' +
-    '<input type="date" id="editNovaData">' +
-    '<label class="label">Novo Funcionario</label>' +
+    '<select id="selectTurnoEdit"><option value="">Carregando...</option></select>' +
+    '<button class="btn btn-danger" type="button" onclick="acaoExcluirRegistro()">Excluir Registro</button>' +
+    '<div style="border-top:1px solid #2A2A2C;margin:8px 0"></div>' +
+    '<h2 style="font-size:16px">🗑️ Excluir Funcionario</h2>' +
+    '<label class="label">Selecione o Funcionario</label>' +
     '<select id="selectFuncEdit">' + opts + '</select>' +
-    '<div style="display:flex;gap:8px">' +
-    '<button class="btn btn-primary" type="submit" style="flex:1">Alterar</button>' +
-    '<button class="btn btn-danger btn-sm" type="button" onclick="acaoExcluirFuncionario()" style="flex:1">Excluir Func.</button></div>' +
+    '<button class="btn btn-danger" type="button" onclick="acaoExcluirFuncionario()">Excluir Funcionario</button>' +
     '</form>';
 }
 
 function telaConfig() {
   var vm = obterConfig('valor_manha', 120);
   var vn = obterConfig('valor_noite', 100);
-  return '<button class="btn-back" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
+  return '<button class="btn-home" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
     '<form onsubmit="event.preventDefault();acaoSalvarConfig()">' +
     '<h2>⚙️ Configuracoes</h2>' +
     '<label class="label">Valor Turno Manha (R$)</label>' +
@@ -127,7 +126,6 @@ function acaoRegistrar() {
   var func = appState.funcs.find(function(f){ return f.nome === nome; });
   if (!func) { toast('Funcionario nao encontrado.', 'erro'); return; }
 
-  // Verificar duplicata
   listarTurnos({ funcionario_id: func.id, inicio: data, fim: data }, function(lista) {
     if (lista.some(function(t){ return t.turno === turno; })) {
       toast('"' + nome + '" ja tem turno da ' + (turno === 'manha' ? 'Manha' : 'Noite') + ' nesta data.', 'erro');
@@ -143,7 +141,7 @@ function acaoRegistrar() {
     }, function(err) {
       if (err) { toast('Erro: ' + err, 'erro'); return; }
       toast('Turno registrado para ' + nome + '!');
-      irPara('menu');
+      document.getElementById('inputDataReg').value = dataHoje();
     });
   });
 }
@@ -237,23 +235,15 @@ function fallbackCopy(text) {
   document.body.removeChild(ta);
 }
 
-function acaoSalvarEdicao() {
-  var turnoId = document.getElementById('selectTurnoEdit').value;
-  if (!turnoId) { toast('Selecione um turno.', 'aviso'); return; }
-  var novaData = document.getElementById('editNovaData').value;
-  if (!novaData) { toast('Selecione uma data.', 'aviso'); return; }
-  var novoNome = document.getElementById('selectFuncEdit').value;
-
-  var dados = { data: novaData };
-  if (novoNome) {
-    var func = appState.funcs.find(function(f){ return f.nome === novoNome; });
-    if (func) { dados.funcionario_id = func.id; dados.funcionario_nome = func.nome; }
-  }
-  atualizarTurno(turnoId, dados, function(err) {
-    if (err) { toast('Erro: ' + err, 'erro'); return; }
-    toast('Registro atualizado!');
-    carregarTurnosEdicao();
-    irPara('menu');
+function acaoExcluirRegistro() {
+  var id = document.getElementById('selectTurnoEdit').value;
+  if (!id) { toast('Selecione um turno.', 'aviso'); return; }
+  modal('Excluir Registro', 'Deseja excluir este registro permanentemente?', function(){
+    excluirTurno(id, function(err) {
+      if (err) { toast('Erro: ' + err, 'erro'); return; }
+      toast('Registro excluido!');
+      carregarTurnosEdicao();
+    });
   });
 }
 
@@ -265,22 +255,10 @@ function carregarTurnosEdicao() {
       sel.innerHTML = lista.map(function(t){
         return '<option value="' + t.id + '">' + formatarDataISO(t.data) + ' - ' + t.funcionario_nome + ' - ' + (t.turno === 'manha' ? 'Manha' : 'Noite') + '</option>';
       }).join('');
-      carregarDataEdicao();
     } else {
       sel.innerHTML = '<option value="">Nenhum turno registrado</option>';
     }
   });
-}
-
-function carregarDataEdicao() {
-  var sel = document.getElementById('selectTurnoEdit');
-  var data = document.getElementById('editNovaData');
-  if (sel && sel.value && data) {
-    // Extrair data do option text
-    var txt = sel.options[sel.selectedIndex].text;
-    var partes = txt.split(' - ')[0].split('/');
-    if (partes.length === 3) data.value = partes[2] + '-' + partes[1] + '-' + partes[0];
-  }
 }
 
 function acaoExcluirFuncionario() {

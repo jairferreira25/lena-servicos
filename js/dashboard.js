@@ -2,7 +2,7 @@ var dashChart1 = null;
 var dashChart2 = null;
 
 function telaDashboard() {
-  return '<button class="btn-back" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
+  return '<button class="btn-home" onclick="irPara(\'menu\')">Voltar ao Inicio</button>' +
     '<h2>📊 Dashboard</h2>' +
     '<div class="filter-bar">' +
     '<select id="dashFunc"><option value="">Todos</option>' + appState.funcs.map(function(f){ return '<option value="' + f.nome + '">' + f.nome + '</option>'; }).join('') + '</select>' +
