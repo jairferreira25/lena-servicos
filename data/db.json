@@ -49,6 +49,14 @@
       "data": "2026-07-15",
       "valor": 120,
       "id": "1784116621782_4xyz"
+    },
+    {
+      "funcionario_id": "1784119354687_sol0",
+      "funcionario_nome": "jair ferreira de nojosa matias",
+      "turno": "manha",
+      "data": "2026-07-15",
+      "valor": 120,
+      "id": "1784119418831_8av1"
     }
   ],
   "config": {
