@@ -5,10 +5,6 @@
       "nome": "benjamin de vasconcelos ferreira"
     },
     {
-      "id": "1784119354687_sol0",
-      "nome": "jair ferreira de nojosa matias"
-    },
-    {
       "id": "1784119369547_6fso",
       "nome": "lena ferreira gomes"
     },
@@ -22,22 +18,6 @@
     }
   ],
   "turnos": [
-    {
-      "funcionario_id": "1784119354687_sol0",
-      "funcionario_nome": "jair ferreira de nojosa matias",
-      "turno": "manha",
-      "data": "2026-07-15",
-      "valor": 120,
-      "id": "1784119418831_8av1"
-    },
-    {
-      "funcionario_id": "1784119354687_sol0",
-      "funcionario_nome": "jair ferreira de nojosa matias",
-      "turno": "noite",
-      "data": "2026-07-15",
-      "valor": 100,
-      "id": "1784119443190_kc3i"
-    },
     {
       "funcionario_id": "1784116246210_uy8u",
       "funcionario_nome": "benjamin de vasconcelos ferreira",
