@@ -216,7 +216,7 @@ function gerarPDF(dados) {
       var cards = [
         { label: 'Total de Dias (Dia)', valor: '' + dados.dias_manha, cor: C.gold },
         { label: 'Total de Dias (Noite)', valor: '' + dados.dias_noite, cor: C.blue },
-        { label: 'Valor Total a Receber', valor: 'R$ ' + dados.valor_total.toFixed(2).replace('.', ','), cor: C.gold, destaque: true }
+        { label: 'Valor Bruto', valor: 'R$ ' + dados.valor_total.toFixed(2).replace('.', ','), cor: C.gold, destaque: true }
       ];
 
       for (var ci = 0; ci < cards.length; ci++) {

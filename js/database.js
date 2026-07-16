@@ -1,6 +1,6 @@
 var db = {
   usandoGitHub: true,
-  local: { funcionarios: [], turnos: [], config: { valor_manha: 120, valor_noite: 100 } }
+  local: { funcionarios: [], turnos: [], adiantamentos: [], config: { valor_manha: 120, valor_noite: 100 } }
 };
 
 function initDB(callback) {
@@ -95,6 +95,37 @@ function salvarConfig(chave, valor, callback) {
   if (db.usandoGitHub) gitSalvarConfig(chave, valor, callback);
   else {
     db.local.config[chave] = valor;
+    salvarLocal(); if (callback) callback(null);
+  }
+}
+
+// ===== ADIANTAMENTOS =====
+function listarAdiantamentos(filtros, callback) {
+  if (db.usandoGitHub) gitListarAdiantamentos(filtros, callback);
+  else {
+    var lista = db.local.adiantamentos ? db.local.adiantamentos.slice().sort(function(a, b) { return b.data.localeCompare(a.data); }) : [];
+    if (filtros.funcionario_id) lista = lista.filter(function(a) { return a.funcionario_id === filtros.funcionario_id; });
+    if (filtros.funcionario_nome) lista = lista.filter(function(a) { return a.funcionario_nome === filtros.funcionario_nome; });
+    if (filtros.inicio) lista = lista.filter(function(a) { return a.data >= filtros.inicio; });
+    if (filtros.fim) lista = lista.filter(function(a) { return a.data <= filtros.fim; });
+    callback(lista);
+  }
+}
+
+function adicionarAdiantamento(dados, callback) {
+  if (db.usandoGitHub) gitAdicionarAdiantamento(dados, callback);
+  else {
+    dados.id = Date.now() + '';
+    if (!db.local.adiantamentos) db.local.adiantamentos = [];
+    db.local.adiantamentos.push(dados);
+    salvarLocal(); callback(null);
+  }
+}
+
+function excluirAdiantamento(id, callback) {
+  if (db.usandoGitHub) gitExcluirAdiantamento(id, callback);
+  else {
+    if (db.local.adiantamentos) db.local.adiantamentos = db.local.adiantamentos.filter(function(a) { return a.id !== id; });
     salvarLocal(); if (callback) callback(null);
   }
 }

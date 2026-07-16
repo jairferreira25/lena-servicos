@@ -164,8 +164,15 @@ function acaoBuscarRelatorio() {
     var vt = turnos.reduce(function(s,t){ return s + t.valor; }, 0);
     var periodo = inicio && fim ? formatarDataISO(inicio) + ' ate ' + formatarDataISO(fim) : '';
 
-    appState.relDados = { nome: nome, dias_manha: dm, dias_noite: dn, valor_total: vt, turnos: turnos, periodo: periodo };
-    exibirResultado(appState.relDados);
+    appState.relDados = { nome: nome, funcionario_id: func.id, dias_manha: dm, dias_noite: dn, valor_total: vt, turnos: turnos, periodo: periodo, inicio: inicio, fim: fim };
+
+    // load adiantamentos do periodo
+    listarAdiantamentos({ funcionario_id: func.id, inicio: inicio, fim: fim }, function(ads) {
+      appState.relDados.adiantamentos = ads;
+      var totalAdiant = ads.reduce(function(s, a) { return s + a.valor; }, 0);
+      appState.relDados.totalAdiantamento = totalAdiant;
+      exibirResultado(appState.relDados);
+    });
     toast('Dados carregados!');
   });
 }
@@ -173,6 +180,8 @@ function acaoBuscarRelatorio() {
 function exibirResultado(dados) {
   var box = document.getElementById('resultBox');
   if (!box) return;
+
+  // ---- turnos history ----
   var hist = '';
   for (var i = 0; i < dados.turnos.length; i++) {
     var t = dados.turnos[i];
@@ -182,42 +191,77 @@ function exibirResultado(dados) {
     hist += '<div class="history-item"><span class="h-date">📅 ' + dt + '</span><span class="h-turno ' + tCls + '">' + tNome + '</span><span class="h-valor">R$ ' + t.valor.toFixed(2) + '</span><button class="h-del" onclick="excluirTurnoRegistro(\'' + t.id + '\')">🗑️</button></div>';
   }
 
+  // ---- adiantamentos list ----
+  var ads = dados.adiantamentos || [];
+  var adiantList = '';
+  for (var j = 0; j < ads.length; j++) {
+    var a = ads[j];
+    var aDt = formatarDataISO(a.data);
+    var aDesc = a.descricao ? ' - ' + a.descricao : '';
+    adiantList += '<div class="history-item" style="border:1px solid #3A0000"><span class="h-date" style="color:#FF6B6B">📅 ' + aDt + '</span><span class="h-turno" style="color:#FF6B6B;flex:1">R$ ' + a.valor.toFixed(2) + aDesc + '</span><button class="h-del" onclick="acaoExcluirAdiantamento(\'' + a.id + '\')">🗑️</button></div>';
+  }
+
+  var totalAdiant = dados.totalAdiantamento || 0;
+  var valorLiq = dados.valor_total - totalAdiant;
+
   var periodoHtml = dados.periodo ? '<div class="row"><span class="label-r">Periodo:</span><span class="value">' + dados.periodo + '</span></div>' : '';
-
-  var adiant = typeof dados.adiantamento !== 'undefined' && dados.adiantamento !== null ? dados.adiantamento : 0;
-  var temAdiant = typeof dados.adiantamento !== 'undefined' && dados.adiantamento !== null;
-
-  var valorDesc = dados.valor_total - adiant;
-
-  var adiantInfo = temAdiant
-    ? '<div class="row"><span class="label-r">Adiantamentos:</span><span class="value negativo">R$ -' + adiant.toFixed(2) + '</span></div>' +
-      '<div class="total-highlight" style="border-color:#D4AF37;margin-top:2px"><span class="label-r">Valor Total com Descontos</span><span class="value" style="color:#D4AF37;font-size:18px">R$ ' + valorDesc.toFixed(2) + '</span></div>'
-    : '';
 
   box.innerHTML =
     '<div class="row"><span class="label-r">Nome:</span><span class="value">' + dados.nome + '</span></div>' +
     periodoHtml +
     '<div class="row"><span class="label-r">Dias (Dia):</span><span class="value">' + dados.dias_manha + '</span></div>' +
     '<div class="row"><span class="label-r">Dias (Noite):</span><span class="value">' + dados.dias_noite + '</span></div>' +
-    '<div class="total-highlight"><span class="label-r">Valor a receber (bruto):</span><span class="value">R$ ' + dados.valor_total.toFixed(2) + '</span></div>' +
-    adiantInfo +
+    (totalAdiant > 0
+      ? '<div class="total-highlight" style="margin-bottom:2px"><span class="label-r">Valor Bruto</span><span class="value">R$ ' + dados.valor_total.toFixed(2) + '</span></div><div class="adiantamento-box" style="padding:8px 12px;text-align:center"><div style="font-size:13px;color:var(--sec)">R$ ' + dados.valor_total.toFixed(2) + ' <span style="color:#555">(Bruto)</span><br><span style="color:#FF6B6B">\u2013 R$ ' + totalAdiant.toFixed(2) + ' <span style="color:#555">(Adiantamentos)</span></span><br><span style="font-weight:700;color:var(--gold)">= R$ ' + valorLiq.toFixed(2) + ' <span style="color:#555">(L\u00edquido)</span></span></div></div>'
+      : '<div class="total-highlight" style="border-color:#D4AF37"><span class="label-r">Valor a Receber</span><span class="value" style="color:#D4AF37;font-size:20px">R$ ' + dados.valor_total.toFixed(2) + '</span></div>'
+    ) +
     '<div class="adiantamento-box">' +
-    '<label class="label" style="font-size:11px">Adiantamentos (R$) — valor descontado</label>' +
-    '<div style="display:flex;gap:8px;margin-top:6px">' +
-    '<input type="number" id="inputAdiantamento" step="0.01" min="0" value="' + adiant.toFixed(2) + '" style="flex:1;padding:8px;font-size:14px">' +
-    '<button class="btn btn-primary btn-sm" style="white-space:nowrap" onclick="acaoCalcularAdiantamento()">Gerar</button></div></div>' +
+    '<label class="label" style="font-size:11px">Adiantamentos registrados no per\u00edodo</label>' +
+    (ads.length ? '<div class="history-list" style="margin-top:4px">' + adiantList + '</div>' : '<div style="color:#555;font-size:12px;padding:4px 0">Nenhum adiantamento registrado.</div>') +
+    '<div style="border-top:1px solid #2A2A2C;margin:8px 0 6px"></div>' +
+    '<label class="label" style="font-size:11px">Novo adiantamento</label>' +
+    '<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">' +
+    '<input type="date" id="inputAdiantData" value="' + dataHoje() + '" style="flex:1;min-width:80px;padding:6px;font-size:12px">' +
+    '<input type="number" id="inputAdiantValor" step="0.01" min="0" placeholder="Valor R$" style="flex:1;min-width:80px;padding:6px;font-size:12px">' +
+    '<input type="text" id="inputAdiantDesc" placeholder="Descri\u00e7\u00e3o (opc)" style="flex:2;min-width:80px;padding:6px;font-size:12px">' +
+    '</div>' +
+    '<button class="btn btn-sm btn-primary" style="width:100%;margin-top:6px;font-size:12px" onclick="acaoAdicionarAdiantamento()">+ Adicionar Adiantamento</button>' +
+    '</div>' +
     '<div style="display:flex;gap:8px;margin:2px 0">' +
     '<button class="btn btn-sm" style="flex:1;font-size:12px" onclick="exportarPDF()">📄 Exportar PDF</button>' +
     '<button class="btn btn-sm" style="flex:1;font-size:12px" onclick="copiarWhatsApp()">📋 Copiar WPP</button></div>' +
-    '<div><div style="color:var(--gold);font-size:12px;font-weight:700;margin-bottom:4px">📋 HISTORICO</div><div class="history-list">' + hist + '</div></div>';
+    '<div><div style="color:var(--gold);font-size:12px;font-weight:700;margin-bottom:4px">📋 HISTORICO DE TURNOS</div><div class="history-list">' + hist + '</div></div>';
 }
 
-function acaoCalcularAdiantamento() {
-  var val = parseFloat(document.getElementById('inputAdiantamento').value);
-  if (isNaN(val) || val < 0) { toast('Digite um valor v\u00e1lido.', 'aviso'); return; }
-  appState.relDados.adiantamento = val;
-  exibirResultado(appState.relDados);
-  toast('Adiantamento de R$ ' + val.toFixed(2) + ' aplicado!');
+function acaoAdicionarAdiantamento() {
+  if (!appState.relDados) { toast('Busque os dados primeiro.', 'aviso'); return; }
+  var val = parseFloat(document.getElementById('inputAdiantValor').value);
+  if (isNaN(val) || val <= 0) { toast('Digite um valor v\u00e1lido.', 'aviso'); return; }
+  var data = document.getElementById('inputAdiantData').value || dataHoje();
+  var desc = document.getElementById('inputAdiantDesc').value.trim();
+  var funcId = appState.relDados.funcionario_id;
+
+  adicionarAdiantamento({
+    funcionario_id: funcId,
+    funcionario_nome: appState.relDados.nome,
+    data: data,
+    valor: val,
+    descricao: desc
+  }, function(err) {
+    if (err) { toast('Erro: ' + err, 'erro'); return; }
+    toast('Adiantamento de R$ ' + val.toFixed(2) + ' registrado!');
+    acaoBuscarRelatorio(); // reload everything
+  });
+}
+
+function acaoExcluirAdiantamento(id) {
+  modal('Excluir Adiantamento', 'Deseja excluir este adiantamento permanentemente?', function() {
+    excluirAdiantamento(id, function(err) {
+      if (err) { toast('Erro ao excluir.', 'erro'); return; }
+      toast('Adiantamento exclu\u00eddo!');
+      acaoBuscarRelatorio(); // reload everything
+    });
+  });
 }
 
 function excluirTurnoRegistro(id) {
@@ -238,17 +282,27 @@ function excluirTurnoRegistro(id) {
 
 function exportarPDF() {
   if (!appState.relDados) { toast('Busque os dados primeiro.', 'aviso'); return; }
-  gerarPDF(appState.relDados);
+  var d = appState.relDados;
+  var pdfDados = {
+    nome: d.nome,
+    dias_manha: d.dias_manha,
+    dias_noite: d.dias_noite,
+    valor_total: d.valor_total,
+    turnos: d.turnos,
+    periodo: d.periodo,
+    adiantamento: d.totalAdiantamento || 0
+  };
+  gerarPDF(pdfDados);
 }
 
 function copiarWhatsApp() {
   if (!appState.relDados) { toast('Busque os dados primeiro.', 'aviso'); return; }
   var d = appState.relDados;
   var periodo = d.periodo ? '\n*Periodo:* ' + d.periodo : '';
-  var adiant = (typeof d.adiantamento !== 'undefined' && d.adiantamento !== null && d.adiantamento > 0);
+  var totalAdiant = d.totalAdiantamento || 0;
   var texto = '*Nome:* ' + d.nome + '.' + periodo + '\n*Dias (Dia):* ' + d.dias_manha + '\n*Dias (Noite):* ' + d.dias_noite + '\n*Valor Bruto:* R$ ' + d.valor_total.toFixed(2) + '.';
-  if (adiant) {
-    texto += '\n*Adiantamento:* -R$ ' + d.adiantamento.toFixed(2) + '\n*Valor L\u00edquido:* R$ ' + (d.valor_total - d.adiantamento).toFixed(2) + '.';
+  if (totalAdiant > 0) {
+    texto += '\n*Adiantamentos:* -R$ ' + totalAdiant.toFixed(2) + '\n*Valor L\u00edquido:* R$ ' + (d.valor_total - totalAdiant).toFixed(2) + '.';
   }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(texto).then(function(){ toast('Copiado! Cole no WhatsApp.'); }).catch(function(){ fallbackCopy(texto); });

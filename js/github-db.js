@@ -4,7 +4,7 @@ var GITHUB_DB = {
   path: 'data/db.json',
   rawBase: 'https://raw.githubusercontent.com',
   apiBase: 'https://api.github.com/repos',
-  dados: { funcionarios: [], turnos: [], config: { valor_manha: 120, valor_noite: 100 } },
+  dados: { funcionarios: [], turnos: [], adiantamentos: [], config: { valor_manha: 120, valor_noite: 100 } },
   listeners: [],
   pollTimer: null,
   ultimaSHA: null
@@ -220,5 +220,26 @@ function gitObterConfig(chave, padrao) {
 
 function gitSalvarConfig(chave, valor, callback) {
   GITHUB_DB.dados.config[chave] = valor;
+  gitSalvar(callback);
+}
+
+// ===== ADIANTAMENTOS =====
+function gitListarAdiantamentos(filtros, callback) {
+  var lista = GITHUB_DB.dados.adiantamentos.slice().sort(function(a, b) { return b.data.localeCompare(a.data); });
+  if (filtros.funcionario_id) lista = lista.filter(function(a) { return a.funcionario_id === filtros.funcionario_id; });
+  if (filtros.funcionario_nome) lista = lista.filter(function(a) { return a.funcionario_nome === filtros.funcionario_nome; });
+  if (filtros.inicio) lista = lista.filter(function(a) { return a.data >= filtros.inicio; });
+  if (filtros.fim) lista = lista.filter(function(a) { return a.data <= filtros.fim; });
+  callback(lista);
+}
+
+function gitAdicionarAdiantamento(dados, callback) {
+  dados.id = Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+  GITHUB_DB.dados.adiantamentos.push(dados);
+  gitSalvar(callback);
+}
+
+function gitExcluirAdiantamento(id, callback) {
+  GITHUB_DB.dados.adiantamentos = GITHUB_DB.dados.adiantamentos.filter(function(a) { return a.id !== id; });
   gitSalvar(callback);
 }
