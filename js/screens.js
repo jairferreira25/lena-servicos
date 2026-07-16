@@ -290,7 +290,8 @@ function exportarPDF() {
     valor_total: d.valor_total,
     turnos: d.turnos,
     periodo: d.periodo,
-    adiantamento: d.totalAdiantamento || 0
+    adiantamento: d.totalAdiantamento || 0,
+    adiantamentos: d.adiantamentos || []
   };
   gerarPDF(pdfDados);
 }

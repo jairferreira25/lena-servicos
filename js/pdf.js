@@ -254,18 +254,66 @@ function gerarPDF(dados) {
 
       // ===== 8. ADIANTAMENTOS =====
       if (dados.adiantamento && dados.adiantamento > 0) {
-        if (y > 245) { pdf.addPage(); fillBg(); y = 18; }
+        if (y > 235) { pdf.addPage(); fillBg(); y = 18; }
+
+        setColor(C.gold);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.text('ADIANTAMENTOS REGISTRADOS', 18, y);
+        y += 7;
+
+        // Table header
+        setColor(C.gold);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7);
+        pdf.text('DATA', 18, y);
+        pdf.text('DESCRI\u00c7\u00c3O', 60, y);
+        pdf.text('VALOR', 178, y, { align: 'right' });
+        setDraw('#3A3A3C');
+        pdf.setLineWidth(0.3);
+        pdf.line(18, y + 1, 192, y + 1);
+        y += 5;
+
+        var adiants = dados.adiantamentos || [];
+        for (var ai = 0; ai < adiants.length; ai++) {
+          if (ai > 0 && ai % 10 === 0) {
+            pdf.addPage(); fillBg(); y = 14;
+            setColor(C.gold);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(7);
+            pdf.text('DATA', 18, y);
+            pdf.text('DESCRI\u00c7\u00c3O', 60, y);
+            pdf.text('VALOR', 178, y, { align: 'right' });
+            setDraw('#3A3A3C');
+            pdf.line(18, y + 1, 192, y + 1);
+            y += 5;
+          }
+          var a = adiants[ai];
+          setFill(ai % 2 === 0 ? C.card : C.cardAlt);
+          pdf.rect(16, y - 1.5, 178, 6, 'F');
+          setColor(C.white);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(6.5);
+          pdf.text(formatarDataISO(a.data), 18, y + 1.5);
+          pdf.text(a.descricao || '-', 60, y + 1.5);
+          setColor('#FF6B6B');
+          pdf.text('R$ ' + a.valor.toFixed(2).replace('.', ','), 178, y + 1.5, { align: 'right' });
+          y += 6;
+        }
+        y += 4;
+
+        if (y > 255) { pdf.addPage(); fillBg(); y = 18; }
 
         var valorLiq = dados.valor_total - dados.adiantamento;
 
-        // Adiantamentos line
+        // Total adiantamentos line
         setFill(C.card);
         setDraw('#3A3A3C');
         pdf.roundedRect(18, y, 174, 9, 4, 4, 'FD');
         setColor(C.gray);
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(7);
-        pdf.text('Adiantamentos:', 24, y + 5.5);
+        pdf.text('Total de Adiantamentos:', 24, y + 5.5);
         setColor('#FF6B6B');
         pdf.text('- R$ ' + dados.adiantamento.toFixed(2).replace('.', ','), 178, y + 5.5, { align: 'right' });
         y += 12;
