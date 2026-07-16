@@ -252,7 +252,40 @@ function gerarPDF(dados) {
 
       y += 32;
 
-      // ===== 8. MENSAGEM FINAL =====
+      // ===== 8. ADIANTAMENTOS =====
+      if (dados.adiantamento && dados.adiantamento > 0) {
+        if (y > 245) { pdf.addPage(); fillBg(); y = 18; }
+
+        var valorLiq = dados.valor_total - dados.adiantamento;
+
+        // Adiantamentos line
+        setFill(C.card);
+        setDraw('#3A3A3C');
+        pdf.roundedRect(18, y, 174, 9, 4, 4, 'FD');
+        setColor(C.gray);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7);
+        pdf.text('Adiantamentos:', 24, y + 5.5);
+        setColor('#FF6B6B');
+        pdf.text('- R$ ' + dados.adiantamento.toFixed(2).replace('.', ','), 178, y + 5.5, { align: 'right' });
+        y += 12;
+
+        // Valor Liquido line
+        setFill(C.cardAlt);
+        setDraw(C.gold);
+        pdf.setLineWidth(0.6);
+        pdf.roundedRect(18, y, 174, 11, 4, 4, 'FD');
+        setColor(C.gray);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7);
+        pdf.text('Valor L\u00edquido a Receber:', 24, y + 6.5);
+        setColor(C.gold);
+        pdf.setFontSize(12);
+        pdf.text('R$ ' + valorLiq.toFixed(2).replace('.', ','), 178, y + 6.5, { align: 'right' });
+        y += 16;
+      }
+
+      // ===== 9. MENSAGEM FINAL =====
       if (y > 260) { pdf.addPage(); fillBg(); y = 15; }
 
       box(18, y, 174, 14, C.footer, 5);

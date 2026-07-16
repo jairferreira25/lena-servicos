@@ -183,16 +183,41 @@ function exibirResultado(dados) {
   }
 
   var periodoHtml = dados.periodo ? '<div class="row"><span class="label-r">Periodo:</span><span class="value">' + dados.periodo + '</span></div>' : '';
+
+  var adiant = typeof dados.adiantamento !== 'undefined' && dados.adiantamento !== null ? dados.adiantamento : 0;
+  var temAdiant = typeof dados.adiantamento !== 'undefined' && dados.adiantamento !== null;
+
+  var valorDesc = dados.valor_total - adiant;
+
+  var adiantInfo = temAdiant
+    ? '<div class="row"><span class="label-r">Adiantamentos:</span><span class="value negativo">R$ -' + adiant.toFixed(2) + '</span></div>' +
+      '<div class="total-highlight" style="border-color:#D4AF37;margin-top:2px"><span class="label-r">Valor Total com Descontos</span><span class="value" style="color:#D4AF37;font-size:18px">R$ ' + valorDesc.toFixed(2) + '</span></div>'
+    : '';
+
   box.innerHTML =
     '<div class="row"><span class="label-r">Nome:</span><span class="value">' + dados.nome + '</span></div>' +
     periodoHtml +
     '<div class="row"><span class="label-r">Dias (Dia):</span><span class="value">' + dados.dias_manha + '</span></div>' +
     '<div class="row"><span class="label-r">Dias (Noite):</span><span class="value">' + dados.dias_noite + '</span></div>' +
-    '<div class="total-highlight"><span class="label-r">Valor a receber:</span><span class="value">R$ ' + dados.valor_total.toFixed(2) + '</span></div>' +
-    '<div style="display:flex;gap:8px;margin:6px 0">' +
+    '<div class="total-highlight"><span class="label-r">Valor a receber (bruto):</span><span class="value">R$ ' + dados.valor_total.toFixed(2) + '</span></div>' +
+    adiantInfo +
+    '<div class="adiantamento-box">' +
+    '<label class="label" style="font-size:11px">Adiantamentos (R$) — valor descontado</label>' +
+    '<div style="display:flex;gap:8px;margin-top:6px">' +
+    '<input type="number" id="inputAdiantamento" step="0.01" min="0" value="' + adiant.toFixed(2) + '" style="flex:1;padding:8px;font-size:14px">' +
+    '<button class="btn btn-primary btn-sm" style="white-space:nowrap" onclick="acaoCalcularAdiantamento()">Gerar</button></div></div>' +
+    '<div style="display:flex;gap:8px;margin:2px 0">' +
     '<button class="btn btn-sm" style="flex:1;font-size:12px" onclick="exportarPDF()">📄 Exportar PDF</button>' +
     '<button class="btn btn-sm" style="flex:1;font-size:12px" onclick="copiarWhatsApp()">📋 Copiar WPP</button></div>' +
     '<div><div style="color:var(--gold);font-size:12px;font-weight:700;margin-bottom:4px">📋 HISTORICO</div><div class="history-list">' + hist + '</div></div>';
+}
+
+function acaoCalcularAdiantamento() {
+  var val = parseFloat(document.getElementById('inputAdiantamento').value);
+  if (isNaN(val) || val < 0) { toast('Digite um valor v\u00e1lido.', 'aviso'); return; }
+  appState.relDados.adiantamento = val;
+  exibirResultado(appState.relDados);
+  toast('Adiantamento de R$ ' + val.toFixed(2) + ' aplicado!');
 }
 
 function excluirTurnoRegistro(id) {
@@ -220,7 +245,11 @@ function copiarWhatsApp() {
   if (!appState.relDados) { toast('Busque os dados primeiro.', 'aviso'); return; }
   var d = appState.relDados;
   var periodo = d.periodo ? '\n*Periodo:* ' + d.periodo : '';
-  var texto = '*Nome:* ' + d.nome + '.' + periodo + '\n*Dias (Dia):* ' + d.dias_manha + '\n*Dias (Noite):* ' + d.dias_noite + '\n*Valor:* R$ ' + d.valor_total.toFixed(2) + '.';
+  var adiant = (typeof d.adiantamento !== 'undefined' && d.adiantamento !== null && d.adiantamento > 0);
+  var texto = '*Nome:* ' + d.nome + '.' + periodo + '\n*Dias (Dia):* ' + d.dias_manha + '\n*Dias (Noite):* ' + d.dias_noite + '\n*Valor Bruto:* R$ ' + d.valor_total.toFixed(2) + '.';
+  if (adiant) {
+    texto += '\n*Adiantamento:* -R$ ' + d.adiantamento.toFixed(2) + '\n*Valor L\u00edquido:* R$ ' + (d.valor_total - d.adiantamento).toFixed(2) + '.';
+  }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(texto).then(function(){ toast('Copiado! Cole no WhatsApp.'); }).catch(function(){ fallbackCopy(texto); });
   } else { fallbackCopy(texto); }
