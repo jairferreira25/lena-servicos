@@ -87,7 +87,16 @@
       "id": "1784224768538_1yin"
     }
   ],
-  "adiantamentos": [],
+  "adiantamentos": [
+    {
+      "funcionario_id": "1784221337858_hyft",
+      "funcionario_nome": "jair ferreira de nojosa matias",
+      "data": "2026-07-15",
+      "valor": 200,
+      "descricao": "Vale!",
+      "id": "1784224809817_9trj"
+    }
+  ],
   "config": {
     "valor_manha": 120,
     "valor_noite": 100
