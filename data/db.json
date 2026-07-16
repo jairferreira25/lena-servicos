@@ -1,5 +1,10 @@
 {
-  "funcionarios": [],
+  "funcionarios": [
+    {
+      "id": "1784221337858_hyft",
+      "nome": "jair ferreira de nojosa matias"
+    }
+  ],
   "turnos": [],
   "config": {
     "valor_manha": 120,
