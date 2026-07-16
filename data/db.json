@@ -77,6 +77,14 @@
       "data": "2026-07-15",
       "valor": 120,
       "id": "1784224760470_8uky"
+    },
+    {
+      "funcionario_id": "1784221337858_hyft",
+      "funcionario_nome": "jair ferreira de nojosa matias",
+      "turno": "noite",
+      "data": "2026-07-15",
+      "valor": 100,
+      "id": "1784224768538_1yin"
     }
   ],
   "adiantamentos": [],
